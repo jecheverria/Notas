@@ -1,0 +1,24 @@
+Como todo en la vida, la gente aprende de sus experienzas y eso me toco.
+La semana pasada uno de mis servidor paso a mejor vida, por suerte el condenado no se llevo la informacion que tenia dentro. Mi servidor tenia Debian+Postgresql 9.1. Copie los archivos a otro servidor para recuperar esa informacion, la tarea no es tan dificil como alguien puede pensar.
+
+Lo primero que hay que saber es que por default los archivos de bases de datos se graban en:
+  /var/lib/postgresql/9.1/main/data
+En el nuevo servidor lo primero que hice fue obviamente instalar postgresql9.1 con su gestor grafico PgAdminIII.
+El respaldo lo grabe dentro de la carpeta 
+  /home/user1/Documentos/respaldo/postgresql/9.1/main
+Ahora vamos a lo bueno... 
+Hay que configurar la nueva ruta de la base de datos, para esto modificamos el archivo de configuracion de postgresql
+  nano etc/postgresql/9.1/main/postgresql.conf 
+Buscamos la siguiente linea
+  data_directory = '/var/lib/postgresql/9.1/main'
+La vamos a modificar con la nueva ruta
+  data_directory = '/home/user1/Documentos/respaldo/postgresql/9.1/main'
+A este punto se procede a reiniciar el servicio de postgresql
+  service postgresql restart
+Como de constumbre en mi caso, me daba un error. Busque por alli y encontre que debia darles permisos a la carpeta /home de lectura y en la carpeta de respaldo darle permisos de escritura y lectura.
+  chown -R postgresql respaldo/
+  chgrp -R 121 /home
+
+A este punto ya deberian de poder acceder sin problemas  a la base de datos.
+CONSIDERACION: Cuando quieran ingresar a la base de datos les va a pedir la clave que le habian configurado a la base de datos.
+
